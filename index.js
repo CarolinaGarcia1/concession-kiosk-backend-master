@@ -18,17 +18,17 @@ var dbConnectionUrl;
 // If the monogo secret has been attached, modify the provided URI to include
 // authentication credentials
 if (mongoUri) {
-	var auth = mongoUsername + 'mongodbUser' + mongoPassword + '@'
+	var  auth  =  mongoUsername  +  ':'  +  mongoPassword  +  '@'
 	var pieces = mongoUri.split('//');
 	dbConnectionUrl = pieces[0] + '//' + auth + pieces[1] + '/' + dbName;
 }
 else if (process.env.MONGODB_URL){
 	dbConnectionUrl = process.env.MONGODB_URL || 'mongodb://localhost:27017/sampledb';
 } else {
-	dbConnectionUrl = 'mongodb://' + mongoUsername + 'mongodbUser' + 
-					mongoPassword + 'mongodbPassword' + 
-					dbServiceName + ':27017/' 
-					+ dbName;
+	dbConnectionUrl  =  'mongodb: //'  +  mongoUsername  +  ':'  + 
+					mongoPassword  +  '@'  + 
+					dbServiceName  +  ': 27017 /' 
+					+  dbName ;
 }
 
 app.get('/ticketNumber', function(req, res, next) {
