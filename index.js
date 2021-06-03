@@ -1,112 +1,112 @@
-const express = require('express');
-const app = express();
-const host = process.env.IP  || '0.0.0.0';
-const port = process.env.PORT || 8080;
-const mongo = require('mongodb').MongoClient;
+const  express  =  require ( 'express' ) ;
+ aplicación  constante =  express ( ) ;
+const  host  =  proceso . env . IP   ||  '0.0.0.0' ;
+ puerto  constante =  proceso . env . PUERTO  ||  8080 ;
+const  mongo  =  require ( 'mongodb' ) . MongoClient ;
 
-const mongoUri = process.env.uri;
-const mongoUsername = process.env.username || process.env.MONGODB_USER;
-const mongoPassword = process.env.password || process.env.MONGODB_PASSWORD;
-const dbName = process.env.database_name || 
-			   process.env.MONGODB_DBNAME || 
-			   process.env.MONGODB_DATABASE ||
-			   'sampledb';
-const dbServiceName = process.env.DATABASE_SERVICE_NAME || 'localhost';
+const  mongoUri  =  proceso . env . uri ;
+const  mongoUsername  =  proceso . env . nombre de usuario  ||  proceso . env . MONGODB_USER ;
+const  mongoPassword  =  proceso . env . contraseña  ||  proceso . env . MONGODB_PASSWORD ;
+const  dbName  =  proceso . env . nombre_base_datos  || 
+			   proceso . env . MONGODB_DBNAME  || 
+			   proceso . env . MONGODB_DATABASE  ||
+			   'sampledb' ;
+const  dbServiceName  =  proceso . env . DATABASE_SERVICE_NAME  ||  'localhost' ;
 
-var dbConnectionUrl;
+var  dbConnectionUrl ;
 
-// If the monogo secret has been attached, modify the provided URI to include
-// authentication credentials
-if (mongoUri) {
-	var auth = mongoUsername + 'mongodbUser' + mongoPassword + 'mongodbPassword'
-	var pieces = mongoUri.split('//');
-	dbConnectionUrl = pieces[0] + '//' + auth + pieces[1] + '/' + dbName;
+// Si se ha adjuntado el secreto de monogo, modifique el URI proporcionado para incluir
+// credenciales de autenticación
+si  ( mongoUri )  {
+	var  auth  =  mongoUsername  +  ':'  +  mongoPassword  +  '@'
+	var  piezas  =  mongoUri . split ( '//' ) ;
+	dbConnectionUrl  =  piezas [ 0 ]  +  '//'  +  auth  +  piezas [ 1 ]  +  '/'  +  dbName ;
 }
-else if (process.env.MONGODB_URL){
-	dbConnectionUrl = process.env.MONGODB_URL || 'mongodb://localhost:27017/sampledb';
-} else {
-	dbConnectionUrl = 'mongodb://' + mongoUsername + 'mongodbUser' + 
-					mongoPassword + 'mongodbPassword' + 
-					dbServiceName + ':27017/' 
-					+ dbName;
+else  if  ( proceso . env . MONGODB_URL ) {
+	dbConnectionUrl  =  proceso . env . MONGODB_URL  ||  'mongodb: // localhost: 27017 / sampledb' ;
+}  más  {
+	dbConnectionUrl  =  'mongodb: //'  +  mongoUsername  +  ':'  + 
+					mongoPassword  +  '@'  + 
+					dbServiceName  +  ': 27017 /' 
+					+  dbName ;
 }
 
-app.get('/ticketNumber', function(req, res, next) {
-	let newTicketNumber = 100;
-	mongo.connect(dbConnectionUrl, (err, client) => {
-		if (err) {
-		  console.error(err);
-		  res.send({success: false, result: 9999});
-		} else {
-			const db = client.db(dbName);
-			const collection = db.collection('orders');
-			collection.find({}).count().then((n) => {
-				if (n > 0) {
-					collection.find().sort({ticketNumber:-1}).limit(1).toArray((err, items) => {
-						let highestTicket = items[0].ticketNumber;
-						newTicketNumber = highestTicket + 1;
-						collection.insertOne({ticketNumber: newTicketNumber, order: req.query}, (err, result) => {
-							console.log('err:' + err, ' result: ' + result);
-						});
-						res.send({success: true, result: newTicketNumber, order: req.query});
-					});
-				} else {
-					collection.insertOne({ticketNumber: newTicketNumber, order: req.query}, (err, result) => {
-						console.log('err:' + err, ' result: ' + result);
-					});
-					res.send({success: true, result: newTicketNumber, order: req.query});
+aplicación . get ( '/ ticketNumber' ,  function ( req ,  res ,  next )  {
+	let  newTicketNumber  =  100 ;
+	mongo . connect ( dbConnectionUrl ,  ( err ,  cliente )  =>  {
+		si  ( err )  {
+		  consola . error ( err ) ;
+		  res . enviar ( { éxito : falso ,  resultado : 9999 } ) ;
+		}  más  {
+			const  db  =  cliente . db ( dbName ) ;
+			 colección  constante =  db . colección ( 'pedidos' ) ;
+			colección . buscar ( { } ) . contar ( ) . entonces ( ( n )  =>  {
+				si  ( n  >  0 )  {
+					colección . encontrar ( ) . sort ( { ticketNumber : - 1 } ) . límite ( 1 ) . toArray ( ( err ,  elementos )  =>  {
+						deja que el  boleto más alto  =  artículos [ 0 ] . ticketNumber ;
+						newTicketNumber  =  boleto más alto  +  1 ;
+						colección . insertOne ( { ticketNumber : newTicketNumber ,  order : req . query } ,  ( err ,  result )  =>  {
+							consola . log ( 'err:'  +  err ,  'resultado:'  +  resultado ) ;
+						} ) ;
+						res . enviar ( { éxito : verdadero ,  resultado : nuevoNumeroTicket ,  orden : req . consulta } ) ;
+					} ) ;
+				}  más  {
+					colección . insertOne ( { ticketNumber : newTicketNumber ,  order : req . query } ,  ( err ,  result )  =>  {
+						consola . log ( 'err:'  +  err ,  'resultado:'  +  resultado ) ;
+					} ) ;
+					res . enviar ( { éxito : verdadero ,  resultado : nuevoNumeroTicket ,  orden : req . consulta } ) ;
 				}
-			}).catch((err) => {
-				console.log(err);
-				res.send({success: false, result: 999});
-			});
+			} ) . atrapar ( ( err )  =>  {
+				consola . log ( err ) ;
+				res . enviar ( { éxito : falso ,  resultado : 999 } ) ;
+			} ) ;
 		}
-	});
-});
+	} ) ;
+} ) ;
 
-/* for debugging purposes */
-app.get('/allorders', function (req, res, next) {
-	var ordersList;
+/ * con fines de depuración * /
+aplicación . get ( '/ allorders' ,  function  ( req ,  res ,  next )  {
+	var  ordersList ;
 
-	mongo.connect(dbConnectionUrl, (err, client) => {
-		if (err) {
-		  console.error(err)
-		  return
+	mongo . connect ( dbConnectionUrl ,  ( err ,  cliente )  =>  {
+		si  ( err )  {
+		  consola . error ( err )
+		  regreso
 		}
-		console.log(dbConnectionUrl);
-		const db = client.db(dbName);
-		const collection = db.collection('orders');
-		collection.find().toArray((err, items) => {
-			ordersList = items;
-			console.log(ordersList);
-			res.send({success: true, result: ordersList});
-		});
-	});
-});
+		consola . log ( dbConnectionUrl ) ;
+		const  db  =  cliente . db ( dbName ) ;
+		 colección  constante =  db . colección ( 'pedidos' ) ;
+		colección . encontrar ( ) . toArray ( ( err ,  elementos )  =>  {
+			ordersList  =  artículos ;
+			consola . log ( ordersList ) ;
+			res . enviar ( { éxito : verdadero ,  resultado : lista de pedidos } ) ;
+		} ) ;
+	} ) ;
+} ) ;
 
-app.get('/debug', function(req, res, next) {
+aplicación . get ( '/ debug' ,  function ( req ,  res ,  next )  {
 
-	var details = {
-		"mongo_url": dbConnectionUrl,
-		"connected": false
-	};
+	var  details  =  {
+		"mongo_url" : dbConnectionUrl ,
+		"conectado" : falso
+	} ;
 
-	mongo.connect(dbConnectionUrl, (err, client) => {
-		if (err) {
-			console.error(err)
-		} else {
-			console.log('Connected to Mongo')
-			details["connected"] = true;
-			console.log("Updated details")
+	mongo . connect ( dbConnectionUrl ,  ( err ,  cliente )  =>  {
+		si  ( err )  {
+			consola . error ( err )
+		}  más  {
+			consola . log ( 'Conectado a Mongo' )
+			detalles [ "conectado" ]  =  verdadero ;
+			consola . log ( "Detalles actualizados" )
 		}
-		res.send(details);
-	});
-});
+		res . enviar ( detalles ) ;
+	} ) ;
+} ) ;
 
-app.use(function(err, req, res, next) {
-	console.error(err.stack);
-	res.status(500).send('Something went wrong.')
-});
+aplicación . use ( function ( err ,  req ,  res ,  next )  {
+	consola . error ( err . pila ) ;
+	res . estado ( 500 ) . enviar ( 'Algo salió mal' )
+} ) ;
 
-app.listen(port, host);
-console.log('Concession Kiosk Backend started on: ' + host + ':' + port);
+aplicación . escuchar ( puerto ,  host ) ;
+consola . log ( 'Concession Kiosk Backend comenzó en:'  +  host  +  ':'  +  puerto ) ;
