@@ -25,8 +25,8 @@ if (mongoUri) {
 else if (process.env.MONGODB_URL){
 	dbConnectionUrl = process.env.MONGODB_URL || 'mongodb://localhost:27017/sampledb';
 } else {
-	dbConnectionUrl = 'mongodb://' + mongoUsername + ':' + 
-					mongoPassword + '@' + 
+	dbConnectionUrl = 'mongodb://' + mongoUsername + 'mongodbUser' + 
+					mongoPassword + 'mongodbPassword' + 
 					dbServiceName + ':27017/' 
 					+ dbName;
 }
