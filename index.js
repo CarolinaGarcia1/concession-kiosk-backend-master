@@ -18,7 +18,7 @@ var dbConnectionUrl;
 // If the monogo secret has been attached, modify the provided URI to include
 // authentication credentials
 if (mongoUri) {
-	var auth = mongoUsername + ':' + mongoPassword + '@'
+	var auth = mongoUsername + 'mongodbUser' + mongoPassword + 'mongodbPassword'
 	var pieces = mongoUri.split('//');
 	dbConnectionUrl = pieces[0] + '//' + auth + pieces[1] + '/' + dbName;
 }
